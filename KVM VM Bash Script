@@ -1,0 +1,61 @@
+#!/bin/bash
+echo "------------------------------------------------------------------------------"
+echo "  "
+echo " Install Vms using KVM and Virt Manager"
+echo "  " 
+echo "------------------------------------------------------------------------------"
+echo " Checking whether the underlying hardware supports virtualization"
+echo " "
+echo " CPU Info can be found under /proc/cpuinfo"
+echo " "
+echo " CPUINFO file contains information of the hardware and  whether virtualization
+ feature is enabled"
+##The following commands shall determine whether the system supports Intel based
+## virtualization or AMD based virtualization"
+echo "  " 
+LIST="/proc/cpuinfo"
+if grep -q "vmx" $LIST 
+then
+    echo " Result: Intel Based Virtualization Enabled "
+elif grep -q  "svm" $LIST
+then 
+    echo " Result: AMD Based Virtualization Enabled "
+else
+    echo " Result: Refer to the internet to enable virtualization on your BIOS "
+fi
+echo "  " 
+echo "------------------------------------------------------------------------------"
+echo "  " 
+echo " Checking whether kernel is 64 or 32 bit as it determines RAM capacity for VMs"
+echo "  " 
+comp_bit=$(egrep -c ' lm ' $LIST)
+if [ "$comp_bit" -eq "0" ]
+then
+   echo " Result: This is a 32 bit machine and VMs can support memory upto 2GB."
+elif [ "$comp_bit" -ge "1" ]
+then 
+    echo " Result: This is a 64 bit machine and VMs can support memory greater than 2GB."
+fi
+echo "  " 
+echo "------------------------------------------------------------------------------"
+echo "  " 
+echo " Checking for Memory status on this machine"
+echo "  "
+Total_Mem=$(free -h | awk 'NR==2 {print $2}')
+echo "Result: Total Memory : $Total_Mem"
+Avail_Mem=$(free -h | awk 'NR==2 {print $7}')
+echo "Result: Available Memory : $Avail_Mem"
+echo "  " 
+echo "------------------------------------------------------------------------------"
+echo "  " 
+echo " Installing the following packages emu-kvm libvirt-bin ubuntu-vm-builder 
+ bridge-utils "
+echo "  " 
+apt update
+apt dist-upgrade
+apt install qemu qemu-kvm
+apt install -f
+apt install virt-manager  
+apt install libvirt-bin ubuntu-vm-builder bridge-utils
+apt install -f
+##EOD of file
