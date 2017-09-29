@@ -1,0 +1,25 @@
+#!/bin/bash
+echo "---------------------------------------------------------------------------"
+echo " "
+echo " Creating a guest VM "
+echo " "
+Total_Mem=$(free -h | awk 'NR==2 {print $2}')
+echo "Result: Total Memory : $Total_Mem"
+Avail_Mem=$(free -h | awk 'NR==2 {print $7}')
+echo "Result: Available Memory : $Avail_Mem "
+echo " "
+echo " Difference of total and sum of available and 2GB memory is ideal to be 
+ allocated to VM gues machine"
+echo " "
+echo "$Total_Mem - $Avail_Mem"
+echo " "
+virt-install --name vm3 \
+  --ram 1024 \
+  --disk path=/var/lib/libvirt/images/vm3.img,size=20 \
+  --vcpus 2 \
+  --os-type linux \
+  --os-variant ubuntu16.04 \
+  --nographics \
+  --cdrom=/tmp/ubuntu-16.04.3-server-amd64.iso 
+## End of File
+
